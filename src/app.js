@@ -2,14 +2,22 @@ const express = require("express");
 
 const app = express();
 
-app.use("/parm",(req, res) => {
-  res.send("Hello Parm Dev From Server");
+// GET Request
+
+app.get("/user/:userId/:name/:password", (req, res) => {
+  res.send({firstName : "Parm", LastName : "Musale"});
 });
-app.use("/dev",(req, res) => {
-  res.send("Hello Parm From Server");
+
+app.get("/user", (req, res) => {
+  res.send("Hello Parm Dev From GET Server");
 });
-app.use("/pm",(req, res) => {
-  res.send("Hello Parm From Server");
+// POST Request
+app.post("/user", (req, res) => {
+  res.send("Hello Parm Dev From POST Server");
+});
+// DELETE Request
+app.delete("/user", (req, res) => {
+  res.send("Delete Parm Dev From POST Server");
 });
 
 app.listen(3000, () => {
