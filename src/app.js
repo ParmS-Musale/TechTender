@@ -2,46 +2,21 @@ const express = require("express");
 
 const app = express();
 
-// USE Request For All And The Order is also Mattter
+const { adminAuth, userAuth } = require("./middlewares/auth");
 
-app.use(
-  "/user",
-  (req, res, next) => {
-    console.log(`New Request Received: ${req.method} ${req.url}`);
-    // res.send("Hello Parm Dev from  request 1");
-    next();
-  },
-  (req, res, next) => {
-    console.log(`New Request Received: ${req.method} ${req.url}`);
-    // res.send("Hello Parm Dev  form request 2");
-    next();
-  },
-  (req, res, next) => {
-    console.log(`New Request Received: ${req.method} ${req.url}`);
-    // res.send("Hello Parm Dev  form request 3");
-    next();
-  },
-  (req, res) => {
-    console.log(`New Request Received: ${req.method} ${req.url}`);
-    res.send("Hello Parm Dev  form request 4");
-  }
-);
-
-// GET Request
-app.get("/user/:userId/:name/:password", (req, res) => {
-  res.send({ firstName: "Parm", LastName: "Musale" });
+app.use("/user/login", (req, res, next) => {
+  console.log("login Succesful");
+  res.send("UserLogged in successfully");
 });
 
-app.get("/user", (req, res) => {
-  res.send("Hello Parm Dev From GET Server");
+app.use("/user/data", adminAuth, (req, res, next) => {
+  console.log("New Data Added");
+  
+  res.send("Data Added");
+  next();
 });
-// POST Request
-app.post("/user", (req, res) => {
-  res.send("Hello Parm Dev From POST Server");
-});
-// DELETE Request
-app.delete("/user", (req, res) => {
-  res.send("Delete Parm Dev From POST Server");
+app.use("/user/delete", (req, res) => {
+  res.send("Delete user");
 });
 
 app.listen(3000, () => {
