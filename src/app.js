@@ -27,6 +27,31 @@ app.get("/user", async (req, res) => {
   }
 });
 
+// Delete The User
+app.delete("/user", async (req, res) => {
+  const userId = req.body.userId;
+  try {
+    const Users = await User.findByIdAndDelete(userId);
+    res.send("Users deleted Successfully");
+  } catch (error) {
+    res.send("Something Went Wrong" + error.message);
+  }
+});
+
+// Update The User
+app.patch("/user", async (req, res) => {
+  const userId = req.body.userId;
+  const data = req.body;
+  console.log(data);
+
+  try {
+  await User.findByIdAndUpdate({ _id: userId }, data);
+    res.send("Users Updated Successfully");
+  } catch (error) {
+    res.send("Something Went Wrong" + error.message);
+  }
+});
+
 connetDB()
   .then(() => {
     console.log("Database connection established");
