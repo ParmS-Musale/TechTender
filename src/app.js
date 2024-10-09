@@ -17,6 +17,16 @@ app.post("/signup", async (req, res) => {
   }
 });
 
+// Get All Users Data
+app.get("/user", async (req, res) => {
+  try {
+    const Users = await User.find({});
+    res.send(Users);
+  } catch (error) {
+    res.send("Something Went Wrong" + error.message);
+  }
+});
+
 connetDB()
   .then(() => {
     console.log("Database connection established");
