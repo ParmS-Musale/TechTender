@@ -11,12 +11,19 @@ app.use("/user/login", (req, res, next) => {
 
 app.use("/user/data", adminAuth, (req, res, next) => {
   console.log("New Data Added");
-  
+
   res.send("Data Added");
   next();
 });
+
 app.use("/user/delete", (req, res) => {
   res.send("Delete user");
+});
+
+app.use("/", (err, req, res, next) => {
+  if (err) {
+    res.status(500).send("Something went wrong");
+  }
 });
 
 app.listen(3000, () => {
