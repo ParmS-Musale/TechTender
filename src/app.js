@@ -1,31 +1,32 @@
 const express = require("express");
-
+const connetDB = require("./config/database");
 const app = express();
+const User = require("./models/user");
 
-const { adminAuth, userAuth } = require("./middlewares/auth");
 
-app.use("/user/login", (req, res, next) => {
-  console.log("login Succesful");
-  res.send("UserLogged in successfully");
-});
+app.post("/signup", async (req, res) => {
+  const user = new User({
+    firstName: "Narendra",
+    lastName: "Modi",
+    emailId: "bjp@example.com",
+    password: "Meloni@123",
+  });
 
-app.use("/user/data", adminAuth, (req, res, next) => {
-  console.log("New Data Added");
-
-  res.send("Data Added");
-  next();
-});
-
-app.use("/user/delete", (req, res) => {
-  res.send("Delete user");
-});
-
-app.use("/", (err, req, res, next) => {
-  if (err) {
-    res.status(500).send("Something went wrong");
+  try {
+    await user.save();
+    res.send("User registered successfully");
+  } catch (error) {
+    res.send("Something Went Wrong" + error.message);
   }
 });
 
-app.listen(3000, () => {
-  console.log("Server listening on port 3000");
-});
+connetDB()
+  .then(() => {
+    console.log("Database connection established");
+    app.listen(3000, () => {
+      console.log("Server listening on port 3000");
+    });
+  })
+  .catch((err) => {
+    console.log("Database cannot be connected", err);
+  });
