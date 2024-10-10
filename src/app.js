@@ -18,10 +18,11 @@ app.post("/signup", async (req, res) => {
 });
 
 // Get All Users Data
+
 app.get("/user", async (req, res) => {
   try {
     const Users = await User.find({});
-    res.send(Users);
+    res.send("Users Registered successfully");
   } catch (error) {
     res.send("Something Went Wrong" + error.message);
   }
@@ -45,7 +46,7 @@ app.patch("/user", async (req, res) => {
   console.log(data);
 
   try {
-  await User.findByIdAndUpdate({ _id: userId }, data);
+    await User.findByIdAndUpdate({ _id: userId }, data);
     res.send("Users Updated Successfully");
   } catch (error) {
     res.send("Something Went Wrong" + error.message);
