@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       default : "This is the default description",
     },
-    image: {
+    photoUrl: {
       type: String,
       default : "This is the default image",
     },

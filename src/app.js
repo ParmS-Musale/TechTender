@@ -40,10 +40,21 @@ app.delete("/user", async (req, res) => {
 });
 
 // Update The User
-app.patch("/user", async (req, res) => {
+app.patch("/user:userId", async (req, res) => {
   const userId = req.body.userId;
   const data = req.body;
   console.log(data);
+
+  const ALLOWED_UPDTAES = ["photoUrl", "about", "gender", "age", "skills"];
+  const isUpdateAllowed = Object.keys(data).every((k) =>
+    ALLOWED_UPDTAES.includes(k)
+  );
+  if (!isUpdateAllowed) {
+    return res.status(400).send("Invalid Updates");
+  }
+  if (data?.skills.length > 10) {
+    throw new Error("Skills must be at least 10");
+  }
 
   try {
     await User.findByIdAndUpdate({ _id: userId }, data);
