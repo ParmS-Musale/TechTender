@@ -4,8 +4,12 @@ const connectDB = require("./config/database"); // Correct the typo "connetDB" t
 const app = express();
 const User = require("./models/user");
 const { validateSignUpData } = require("./utils/validation");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 
 app.use(express.json());
+app.use(cookieParser());
+
 // SugnUp API
 app.post("/signup", async (req, res) => {
   try {
@@ -50,22 +54,50 @@ app.post("/login", async (req, res) => {
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (isPasswordValid) {
+      // Create a JWT token
+
+      const token = await jwt.sign({ _id: user._id }, "Dev@tinder$21");
+      // Add the token to the cookie and send response to the user
+      res.cookie("token", token);
       res.send("Logged in successfully");
     } else {
-      return res.status(400).send("Invalid Credentials"); // Same error response for security reasons
+      return res.status(400).send("Invalid Credentials");
     }
   } catch (error) {
-    res.status(500).send("Something went wrong: " + error.message); // Updated error handling
+    res.status(500).send("Something went wrong: " + error.message);
+  }
+});
+
+app.get("/profile", async (req, res) => {
+  try {
+    const cookie = req.cookie;
+
+    const { token } = cookie;
+
+    if (!token) {
+      throw new Error("Invalid token");
+    }
+
+    const decodeMessage = await jwt.verify(token, "Dev@tinder$21");
+    const _id = decodeMessage;
+
+    const user = new User.findById(_id);
+    if (!user) {
+      throw new Error("Invalid user");
+    }
+    res.send(user);
+  } catch (error) {
+    res.status(400).send("Error: " + error.message);
   }
 });
 
 // Get All Users Data
 app.get("/user", async (req, res) => {
   try {
-    const users = await User.find({}); // Changed "Users" to lowercase to follow variable naming convention
-    res.json(users); // Send users data in JSON format
+    const users = await User.find({});
+    res.json(users);
   } catch (error) {
-    res.status(500).send("Something went wrong: " + error.message); // Updated error handling
+    res.status(500).send("Something went wrong: " + error.message);
   }
 });
 
@@ -73,17 +105,17 @@ app.get("/user", async (req, res) => {
 app.delete("/user", async (req, res) => {
   const userId = req.body.userId;
   try {
-    await User.findByIdAndDelete(userId); // Corrected deletion logic, removed unnecessary "Users" variable
+    await User.findByIdAndDelete(userId);
     res.send("User deleted successfully");
   } catch (error) {
-    res.status(500).send("Something went wrong: " + error.message); // Updated error handling
+    res.status(500).send("Something went wrong: " + error.message);
   }
 });
 
 // Update The User
 app.patch("/user/:userId", async (req, res) => {
   // Corrected the route by adding colon before ":userId"
-  const userId = req.params.userId; // Use req.params to get userId from the URL path
+  const userId = req.params.userId;
   const data = req.body;
   console.log(data);
 
@@ -98,14 +130,14 @@ app.patch("/user/:userId", async (req, res) => {
 
   if (data?.skills?.length > 10) {
     // Safely check if skills exist before validating
-    return res.status(400).send("Skills must be less than 10"); // Corrected message
+    return res.status(400).send("Skills must be less than 10");
   }
 
   try {
-    await User.findByIdAndUpdate(userId, data, { new: true }); // Added { new: true } to return the updated document
+    await User.findByIdAndUpdate(userId, data, { new: true });
     res.send("User updated successfully");
   } catch (error) {
-    res.status(500).send("Something went wrong: " + error.message); // Updated error handling
+    res.status(500).send("Something went wrong: " + error.message);
   }
 });
 
